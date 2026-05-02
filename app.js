@@ -321,7 +321,7 @@ function renderTaskItem(task, cat) {
 
   el.addEventListener('contextmenu', (e) => {
     e.preventDefault();
-    showContextMenu(e.pageX, e.pageY, { type: 'task', taskId: task.id });
+    showContextMenu(e.clientX, e.clientY, { type: 'task', taskId: task.id });
   });
 
   el.addEventListener('dblclick', () => openTaskModal(task));
@@ -1423,11 +1423,28 @@ $('#dday-save').addEventListener('click', () => {
 // ===== 컨텍스트 메뉴 =====
 // ============================
 function showContextMenu(x, y, target) {
-  contextTarget = target;
+   contextTarget = target;
   const menu = $('#context-menu');
-  menu.style.left = x + 'px';
-  menu.style.top = y + 'px';
+
   menu.classList.add('show');
+
+  const offset = 8;
+  const menuRect = menu.getBoundingClientRect();
+
+  let left = x + offset;
+  let top = y + offset;
+
+  // 화면 오른쪽/아래로 튀어나가지 않게 보정
+  if (left + menuRect.width > window.innerWidth) {
+    left = x - menuRect.width - offset;
+  }
+
+  if (top + menuRect.height > window.innerHeight) {
+    top = y - menuRect.height - offset;
+  }
+
+  menu.style.left = left + 'px';
+  menu.style.top = top + 'px';
 }
 
 function hideContextMenu() {
